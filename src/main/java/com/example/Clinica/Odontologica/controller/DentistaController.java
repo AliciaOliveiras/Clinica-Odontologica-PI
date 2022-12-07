@@ -1,6 +1,8 @@
 package com.example.Clinica.Odontologica.controller;
 
 import com.example.Clinica.Odontologica.dto.DentistaDto;
+import com.example.Clinica.Odontologica.exception.BadRequestException;
+import com.example.Clinica.Odontologica.exception.ResourceNotFoundException;
 import com.example.Clinica.Odontologica.model.DentistaModel;
 import com.example.Clinica.Odontologica.repository.impl.DentistaDaoH2;
 import com.example.Clinica.Odontologica.service.DentistaService;
@@ -18,11 +20,12 @@ public class DentistaController {
 
     @GetMapping
     public List<DentistaDto> buscarTodos(){
+
         return dentistaService.buscarTodosDentistas();
     }
 
     @PostMapping
-    public ResponseEntity<DentistaModel> registrarDentista(@RequestBody DentistaModel dentista){
+    public ResponseEntity<DentistaModel> registrarDentista(@RequestBody DentistaModel dentista)throws BadRequestException {
         return ResponseEntity.ok(dentistaService.salvarDentista(dentista));
     }
 
@@ -38,17 +41,32 @@ public class DentistaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DentistaModel> buscarDentista(@PathVariable Long id){
-        return ResponseEntity.ok(dentistaService.buscarDentista(id));
+    public ResponseEntity<DentistaModel> buscarDentista(@PathVariable Long id) throws ResourceNotFoundException {
+
+        try{
+            return ResponseEntity.ok(dentistaService.buscarDentista(id));
+        }catch(Exception e) {
+            throw new ResourceNotFoundException("Não foi encontrado o dentista que você quis buscar por id de número: " + id);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletarDentista(@PathVariable Long id){
-        ResponseEntity responseEntity = null;
-        if(dentistaService.deletarDentista(id))
-            responseEntity = ResponseEntity.status(HttpStatus.OK).build();
-        else
-            responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        return responseEntity;
+    public ResponseEntity deletarDentista(@PathVariable Long id) throws ResourceNotFoundException {
+
+        try {
+            dentistaService.deletarDentista(id);
+            return ResponseEntity.ok("Deletado");
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Não foi encontrado o dentista para deletar de id: " + id);
+        }
     }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<String> processarErrorBadRequest(BadRequestException ex){
+
+        //essa classe vai pegar o erro para nós e reportar para o ResponseEntity
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 }
+
