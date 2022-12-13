@@ -13,4 +13,8 @@ public interface ConsultaRepository extends JpaRepository<ConsultaModel, Long> {
 
     @Query("Select consulta c from Consulta where c.id = ?1 ")
     Optional<ConsultaModel> findConsultaByNome(String nome);
+
+    ConsultaModel findByDentista_Nome(String nome);
+
+    ConsultaModel findById_Id(Long id);
 }
