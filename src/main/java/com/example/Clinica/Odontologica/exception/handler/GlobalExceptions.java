@@ -1,5 +1,6 @@
-package com.example.Clinica.Odontologica.exception;
+package com.example.Clinica.Odontologica.exception.handler;
 
+import com.example.Clinica.Odontologica.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
