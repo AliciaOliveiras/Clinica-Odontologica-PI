@@ -1,43 +1,40 @@
 package com.example.Clinica.Odontologica.service;
 
-import com.example.Clinica.Odontologica.dto.ConsultaDto;
-import com.example.Clinica.Odontologica.dto.DentistaDto;
 import com.example.Clinica.Odontologica.model.ConsultaModel;
-import com.example.Clinica.Odontologica.model.DentistaModel;
-import com.example.Clinica.Odontologica.repository.IDao;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.Clinica.Odontologica.repository.ConsultaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+
 import java.util.List;
 
+@Service
 public class ConsultaService {
 
-    private IDao<ConsultaModel> consultaDao;
+    @Autowired
+    ConsultaRepository consultaRepository;
 
-    public ConsultaService(IDao<ConsultaModel> consultaIDao) {
-        this.consultaDao = consultaIDao;
-    }
-
-    public ConsultaModel salvarConsulta(ConsultaModel consulta){
-        return consultaDao.salvar(consulta);
+    public ResponseEntity salvarConsulta(ConsultaModel consulta){
+        try{
+            ConsultaModel consultaSalva = consultaRepository.save(consulta);
+            return new ResponseEntity(consultaSalva, HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity("Não foi possível salvar a consulta", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public ConsultaModel buscarConsulta(Long id){
-        return consultaDao.buscar(id);
+        return consultaRepository.findById_Id(id);
     }
 
-    public List<ConsultaDto> buscarTodasConsultas(){
-        ObjectMapper mapper = new ObjectMapper();
-        List<ConsultaModel> consultas = consultaDao.buscarTodos();
-        List<ConsultaDto> consultaDTOS = new ArrayList<>();
-        for(ConsultaModel consulta:consultas){
-            ConsultaDto consultaDto = mapper.convertValue(consulta, ConsultaDto.class);
-            consultaDTOS.add(consultaDto);
+    public ResponseEntity buscarTodasConsultas(){
+        List<ConsultaModel> listConsultas = consultaRepository.findAll();
+        if(listConsultas.isEmpty()){
+            return new ResponseEntity<>("Nenhuma consulta cadastrada", HttpStatus.NOT_FOUND);
         }
-        return consultaDTOS;
-    }
-
-    public ConsultaModel atualizarConsulta(ConsultaModel consulta){
-        return consultaDao.atualizar(consulta);
+        return new ResponseEntity<>(listConsultas, HttpStatus.OK);
     }
 }

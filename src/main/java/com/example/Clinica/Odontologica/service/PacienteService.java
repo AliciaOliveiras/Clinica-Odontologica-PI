@@ -2,62 +2,68 @@ package com.example.Clinica.Odontologica.service;
 
 import com.example.Clinica.Odontologica.dto.PacienteDto;
 import com.example.Clinica.Odontologica.model.PacienteModel;
-import com.example.Clinica.Odontologica.repository.IDao;
 import com.example.Clinica.Odontologica.repository.PacienteRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PacienteService {
 
-    private IDao<PacienteModel> pacienteDao;
-
-    public PacienteService(IDao<PacienteModel> pacienteIDao) {
-        this.pacienteDao = pacienteIDao;
-    }
+    @Autowired
+    PacienteRepository pacienteRepository;
 
     public PacienteModel salvarPaciente(PacienteModel paciente){
         paciente.setDataAlta(new Date());
-        return pacienteDao.salvar(paciente);
+        PacienteModel pacienteSalvo = pacienteRepository.save(paciente);
+        return pacienteSalvo;
     }
 
-    public PacienteModel buscarPaciente(Long id){
-        return pacienteDao.buscar(id);
+    public PacienteModel buscarPaciente(Long id) {
+        return pacienteRepository.findById_Id(id);
     }
 
-    public List<PacienteDto> buscarTodosPacientes(){
-        ObjectMapper mapper = new ObjectMapper();
-        List<PacienteModel> pacientes = pacienteDao.buscarTodos();
-        List<PacienteDto> pacienteDTOS = new ArrayList<>();
-        for(PacienteModel paciente:pacientes){
-            PacienteDto pacienteDto = mapper.convertValue(paciente, PacienteDto.class);
-            pacienteDTOS.add(pacienteDto);
+    public ResponseEntity buscarTodosPacientes() {
+        List<PacienteModel> listPacientes = pacienteRepository.findAll();
+        if (listPacientes.isEmpty()) {
+            return new ResponseEntity("Nenhum paciente cadastrado", HttpStatus.NOT_FOUND);
         }
-        return pacienteDTOS;
+        return new ResponseEntity(listPacientes, HttpStatus.OK);
     }
 
-    public Boolean deletarPaciente(Long id){
-        return pacienteDao.deletar(id);
+    public ResponseEntity deletarPaciente (Long id){
+        Optional<PacienteModel> paciente = pacienteRepository.findById(id);
+
+        if (paciente.isEmpty()) {
+            return new ResponseEntity("Id do paciente não existe", HttpStatus.BAD_REQUEST);
+        }
+//        repository.findById(id).orElseThrow(() -> new RuntimeException());
+        pacienteRepository.deleteById(id);
+        return new ResponseEntity("Excluido com sucesso", HttpStatus.OK);
     }
 
-    public PacienteModel atualizarPaciente(PacienteModel paciente){
-        return pacienteDao.atualizar(paciente);
-    }
+    public PacienteDto atualizarPaciente(PacienteDto pacienteDto){
+        ObjectMapper mapper = new ObjectMapper();
+        Optional<PacienteModel> pacienteOptional = pacienteRepository.findById(pacienteDto.getId());
+        PacienteDto pacienteAlterado = null;
+        if(pacienteOptional.isEmpty()){
+            return pacienteAlterado;
+        }
+        PacienteModel paciente = pacienteOptional.get();
+        if(pacienteDto.getNome() != null){
+            paciente.setNome(pacienteDto.getNome());
+        }
 
-    private PacienteRepository pacienteRepository;
-
-    @Autowired
-    public PacienteService(PacienteRepository pacienteRepository){
-        this.pacienteRepository = pacienteRepository;
-    }
-
-    public PacienteModel buscarPorNome(String nome){
-        return pacienteRepository.findPacienteByNome(nome).get();
+        if(pacienteDto.getSobrenome() != null){
+            paciente.setSobrenome(pacienteDto.getSobrenome());
+        }
+        pacienteAlterado = mapper.convertValue(pacienteRepository.save(paciente), PacienteDto.class);
+        return pacienteAlterado;
     }
 }
-
