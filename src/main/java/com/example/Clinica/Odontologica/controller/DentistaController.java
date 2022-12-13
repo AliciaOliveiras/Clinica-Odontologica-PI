@@ -6,6 +6,7 @@ import com.example.Clinica.Odontologica.exception.ResourceNotFoundException;
 import com.example.Clinica.Odontologica.model.DentistaModel;
 import com.example.Clinica.Odontologica.repository.impl.DentistaDaoH2;
 import com.example.Clinica.Odontologica.service.DentistaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,32 +14,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dentista")
+@RequestMapping("/api/dentistas")
 public class DentistaController {
 
-    private DentistaService dentistaService = new DentistaService(new DentistaDaoH2());
 
-    @GetMapping
-    public List<DentistaDto> buscarTodos(){
+    @Autowired
+    DentistaService dentistaService;
+
+    @GetMapping()
+    public ResponseEntity buscarTodosDentistas(){
 
         return dentistaService.buscarTodosDentistas();
     }
 
-    @PostMapping
-    public ResponseEntity<DentistaModel> registrarDentista(@RequestBody DentistaModel dentista)throws BadRequestException {
+    @PostMapping()
+    public ResponseEntity<ResponseEntity> salvarDentista(@RequestBody DentistaModel dentista)throws BadRequestException {
         return ResponseEntity.ok(dentistaService.salvarDentista(dentista));
     }
 
-    @PutMapping
-    public ResponseEntity<DentistaModel> atualizarDentista(@RequestBody DentistaModel dentista){
-        ResponseEntity<DentistaModel> response = null;
-
-        if( dentista.getId() > 0 && dentistaService.buscarDentista(dentista.getId()) != null)
-            response = ResponseEntity.ok(dentistaService.atualizarDentista(dentista));
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        return response;
+    @PutMapping()
+    public ResponseEntity atualizarDentista(@RequestBody DentistaDto dentistaDto){
+        DentistaDto dentistaDtoAlterado = dentistaService.atualizarDentista(dentistaDto);
+        if(dentistaDtoAlterado == null){
+            return new ResponseEntity<>("Erro ao alterar dentista", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Dentista alterado com sucesso", HttpStatus.OK);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<DentistaModel> buscarDentista(@PathVariable Long id) throws ResourceNotFoundException {
@@ -60,7 +62,6 @@ public class DentistaController {
             throw new ResourceNotFoundException("Não foi encontrado o dentista para deletar de id: " + id);
         }
     }
-
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<String> processarErrorBadRequest(BadRequestException ex){
 

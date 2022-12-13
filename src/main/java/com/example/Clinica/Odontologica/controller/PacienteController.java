@@ -6,6 +6,7 @@ import com.example.Clinica.Odontologica.exception.ResourceNotFoundException;
 import com.example.Clinica.Odontologica.model.PacienteModel;
 import com.example.Clinica.Odontologica.repository.impl.PacienteDaoH2;
 import com.example.Clinica.Odontologica.service.PacienteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,27 +17,26 @@ import java.util.List;
 @RequestMapping("/paciente")
 public class PacienteController {
 
-    private PacienteService pacienteService = new PacienteService(new PacienteDaoH2());
+    @Autowired
+    PacienteService pacienteService;
 
-    @GetMapping
-    public List<PacienteDto> buscarTodos(){
+    @GetMapping()
+    public ResponseEntity buscarTodos(){
         return pacienteService.buscarTodosPacientes();
     }
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<PacienteModel> registrarPaciente(@RequestBody PacienteModel paciente) throws ResourceNotFoundException{
         return ResponseEntity.ok(pacienteService.salvarPaciente(paciente));
     }
 
-    @PutMapping
-    public ResponseEntity<PacienteModel> atualizarPaciente(@RequestBody PacienteModel paciente){
-        ResponseEntity<PacienteModel> response = null;
-
-        if( paciente.getId() > 0 && pacienteService.buscarPaciente(paciente.getId()) != null)
-            response = ResponseEntity.ok(pacienteService.atualizarPaciente(paciente));
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        return response;
+    @PutMapping()
+    public ResponseEntity atualizarPaciente(@RequestBody PacienteDto pacienteDto){
+        PacienteDto pacienteDtoAlterado = pacienteService.atualizarPaciente(pacienteDto);
+        if(pacienteDtoAlterado == null){
+            return new ResponseEntity<>("Erro ao alterar paciente", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Paciente alterado com sucesso", HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
