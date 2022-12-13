@@ -2,8 +2,8 @@ package com.example.Clinica.Odontologica.model;
 
 import com.example.Clinica.Odontologica.dto.DentistaDto;
 import com.example.Clinica.Odontologica.dto.PacienteDto;
-import jakarta.persistence.*;
 
+import javax.persistence.*;
 import java.util.Date;
 @Entity
 @Table(name = "Consulta")
@@ -14,30 +14,22 @@ public class ConsultaModel {
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "consulta_sequence")
     private Long id;
     private Date dataConsulta;
-    private DentistaDto dentista;
-    private PacienteDto paciente;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "paciente_id")
-    private PacienteModel paciente1;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "paciente_id")
+    private PacienteModel paciente;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "dentista_id")
-    private DentistaModel dentista1;
+    private DentistaModel dentista;
 
     public ConsultaModel() {
     }
 
-    public ConsultaModel(Date dataConsulta, DentistaDto dentista, PacienteDto paciente) {
+    public ConsultaModel(Date dataConsulta, PacienteModel paciente, DentistaModel dentista) {
         this.dataConsulta = dataConsulta;
-        this.dentista = dentista;
         this.paciente = paciente;
-    }
-
-    public ConsultaModel(Long id, Date dataConsulta, DentistaDto dentista, PacienteDto paciente) {
-        this.id = id;
-        this.dataConsulta = dataConsulta;
         this.dentista = dentista;
-        this.paciente = paciente;
     }
 
     public Long getId() {
@@ -56,20 +48,20 @@ public class ConsultaModel {
         this.dataConsulta = dataConsulta;
     }
 
-    public DentistaDto getDentista() {
-        return dentista;
-    }
-
-    public void setDentista(DentistaDto dentista) {
-        this.dentista = dentista;
-    }
-
-    public PacienteDto getPaciente() {
+    public PacienteModel getPaciente() {
         return paciente;
     }
 
-    public void setPaciente(PacienteDto paciente) {
+    public void setPaciente(PacienteModel paciente) {
         this.paciente = paciente;
+    }
+
+    public DentistaModel getDentista() {
+        return dentista;
+    }
+
+    public void setDentista(DentistaModel dentista) {
+        this.dentista = dentista;
     }
 
     @Override

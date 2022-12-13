@@ -1,7 +1,9 @@
 package com.example.Clinica.Odontologica.model;
 
-import jakarta.persistence.*;
+
 import org.springframework.security.core.GrantedAuthority;
+
+import javax.persistence.*;
 
 @Entity
 public class PerfilModel implements GrantedAuthority {

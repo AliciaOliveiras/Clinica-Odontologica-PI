@@ -1,7 +1,6 @@
 package com.example.Clinica.Odontologica.model;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,20 +14,11 @@ public class DentistaModel {
     private String nome;
     private String sobrenome;
     private int matriculaDentista;
-    @OneToMany(mappedBy = "dentista",fetch = FetchType.LAZY)
-    private Set<PacienteModel> pacientes = new HashSet<>();
 
-    @ManyToMany(mappedBy = "dentista",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "dentista",fetch = FetchType.LAZY)
     private Set<ConsultaModel> consultas = new HashSet<>();
 
     public DentistaModel() {
-    }
-
-    public DentistaModel(Long id, String nome, String sobrenome, int matriculaDentista) {
-        this.id = id;
-        this.nome = nome;
-        this.sobrenome = sobrenome;
-        this.matriculaDentista = matriculaDentista;
     }
 
     public DentistaModel(String nome, String sobrenome, int matriculaDentista) {
@@ -79,4 +69,3 @@ public class DentistaModel {
                 '}';
     }
 }
-

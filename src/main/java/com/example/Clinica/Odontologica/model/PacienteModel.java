@@ -1,7 +1,6 @@
 package com.example.Clinica.Odontologica.model;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,25 +17,12 @@ public class PacienteModel {
     private String endereco;
     private int rg;
     private Date dataAlta;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "dentista_id")
-    private DentistaModel dentista;
 
-    @OneToOne(mappedBy = "paciente",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "paciente",fetch = FetchType.LAZY)
     private Set<ConsultaModel> consultas = new HashSet<>();
 
 
-
     public PacienteModel() {
-    }
-
-    public PacienteModel(Long id, String nome, String sobrenome, String endereco, int rg, Date dataAlta) {
-        this.id = id;
-        this.nome = nome;
-        this.sobrenome = sobrenome;
-        this.endereco = endereco;
-        this.rg = rg;
-        this.dataAlta = dataAlta;
     }
 
     public PacienteModel(String nome, String sobrenome, String endereco, int rg, Date dataAlta) {
@@ -107,3 +93,4 @@ public class PacienteModel {
                 '}';
     }
 }
+

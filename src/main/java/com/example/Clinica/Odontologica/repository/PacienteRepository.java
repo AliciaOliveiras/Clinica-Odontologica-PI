@@ -1,6 +1,5 @@
 package com.example.Clinica.Odontologica.repository;
 
-import com.example.Clinica.Odontologica.model.ConsultaModel;
 import com.example.Clinica.Odontologica.model.PacienteModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
