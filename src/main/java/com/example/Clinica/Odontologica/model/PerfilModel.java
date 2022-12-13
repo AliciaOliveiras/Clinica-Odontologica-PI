@@ -1,13 +1,7 @@
 package com.example.Clinica.Odontologica.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-
-import javax.persistence.*;
 
 @Entity
 public class PerfilModel implements GrantedAuthority {
