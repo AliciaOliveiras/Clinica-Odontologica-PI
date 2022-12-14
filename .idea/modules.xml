@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Clinica-Odontologica-PI.iml" filepath="$PROJECT_DIR$/.idea/Clinica-Odontologica-PI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Clinica-Odontologica-PI-main/Clinica-odonto.iml" filepath="$PROJECT_DIR$/Clinica-Odontologica-PI-main/Clinica-odonto.iml" />
+    </modules>
+  </component>
+</project>
